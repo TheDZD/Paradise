@@ -9,3 +9,5 @@ sound/music/traitor.ogg
 sound/items/bikehorn.ogg
 sound/effects/siren.ogg
 sound/ambience/song_game.ogg
+sound/misc/highlander.ogg
+sound/misc/highlander_only_one.ogg

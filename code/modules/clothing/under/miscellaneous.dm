@@ -321,6 +321,10 @@
 	item_color = "kilt"
 	body_parts_covered = UPPER_TORSO|LOWER_TORSO|FEET
 
+/obj/item/clothing/under/kilt/highlander
+	desc = "You're the only one worthy of this kilt."
+	flags = NODROP
+
 /obj/item/clothing/under/sexymime
 	name = "sexy mime outfit"
 	desc = "The only time when you DON'T enjoy looking at someone's rack."

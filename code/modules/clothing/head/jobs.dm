@@ -65,6 +65,10 @@
 	desc = "A beret, an artists favorite headwear."
 	icon_state = "beret"
 
+/obj/item/clothing/head/beret/highlander
+	desc = "That was white fabric. <i>Was.</i>"
+	flags = NODROP
+
 //Security
 /obj/item/clothing/head/HoS
 	name = "head of security cap"

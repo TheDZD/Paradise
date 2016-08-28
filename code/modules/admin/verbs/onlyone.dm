@@ -3,11 +3,12 @@
 		alert("The game hasn't started yet!")
 		return
 
+	to_chat(world, "<span class='biggerdanger'><i>THERE CAN BE ONLY ONE!!!</i></span>")
+	world << sound('sound/misc/highlander.ogg')
+
 	var/list/incompatible_species = list("Plasmaman", "Vox")
 	for(var/mob/living/carbon/human/H in player_list)
 		if(H.stat == DEAD || !(H.client))
-			continue
-		if(is_special_character(H))
 			continue
 		if(H.species.name in incompatible_species)
 			H.set_species("Human")
@@ -16,12 +17,20 @@
 
 		ticker.mode.traitors += H.mind
 		H.mind.special_role = SPECIAL_ROLE_TRAITOR
+		H.species.flags |= NOGUNS
+
+		var/datum/objective/steal/steal_objective = new
+		steal_objective.owner = H.mind
+		steal_objective.steal_target = new /datum/theft_objective/nukedisc
+		steal_objective.explanation_text = "Steal the nuclear authentication disk."
+		H.mind.objectives += steal_objective
 
 		var/datum/objective/hijack/hijack_objective = new
+		hijack_objective.explanation_text = "Escape on the shuttle alone. Ensure nobody else makes it out."
 		hijack_objective.owner = H.mind
 		H.mind.objectives += hijack_objective
 
-		to_chat(H, "<B>You are a Highlander. Kill all other Highlanders. There can be only one.</B>")
+		to_chat(H, "<span class='danger'>You are a Highlander. Kill all other Highlanders. There can be only one.</span>")
 		var/obj_count = 1
 		for(var/datum/objective/OBJ in H.mind.objectives)
 			to_chat(H, "<B>Objective #[obj_count]</B>: [OBJ.explanation_text]")
@@ -34,10 +43,9 @@
 				continue
 			qdel(I)
 
-		H.equip_to_slot_or_del(new /obj/item/clothing/under/kilt(H), slot_w_uniform)
+		H.equip_to_slot_or_del(new /obj/item/clothing/under/kilt/highlander(H), slot_w_uniform)
 		H.equip_to_slot_or_del(new /obj/item/device/radio/headset/heads/captain(H), slot_l_ear)
-		H.equip_to_slot_or_del(new /obj/item/clothing/head/beret(H), slot_head)
-		H.equip_to_slot_or_del(new /obj/item/weapon/claymore(H), slot_r_hand)
+		H.equip_to_slot_or_del(new /obj/item/clothing/head/beret/highlander(H), slot_head)
 		H.equip_to_slot_or_del(new /obj/item/clothing/shoes/combat(H), slot_shoes)
 		H.equip_to_slot_or_del(new /obj/item/weapon/pinpointer(H.loc), slot_l_store)
 
@@ -48,14 +56,19 @@
 		W.access += get_all_centcom_access()
 		W.assignment = "Highlander"
 		W.registered_name = H.real_name
+		W.flags |= NODROP
 		H.equip_to_slot_or_del(W, slot_wear_id)
 		H.species.equip(H)
 		H.regenerate_icons()
 
+		var/obj/item/weapon/claymore/highlander/H1 = new(H)
+		H.put_in_hands(H1)
+		H1.pickup(H)
+
 	message_admins("[key_name_admin(usr)] used THERE CAN BE ONLY ONE! -NO ATTACK LOGS WILL BE SENT TO ADMINS FROM THIS POINT FORTH-", 1)
 	log_admin("[key_name(usr)] used there can be only one.")
+	shuttle_master.emergency.request(null, 0.5)
 	nologevent = 1
-	world << sound('sound/music/THUNDERDOME.ogg')
 
 /client/proc/only_me()
 	if(!ticker)
